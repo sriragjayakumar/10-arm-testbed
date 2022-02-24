@@ -26,10 +26,7 @@ def std_norm_dist_gen(mean,std,k):
     
     return distribution
 
-
-
-if __name__ == '__main__':
-    
+def play():
     
     for _ in range(2000):
         
@@ -58,3 +55,14 @@ if __name__ == '__main__':
             valEstimates[actionT] = rSum[actionT]/kAction[actionT]
             
             scoreArr[step]=reward
+            
+    return scoreArr/2000
+
+if __name__ == '__main__':
+        
+        scoreAvg=play()
+        plt.title("10-Armed TestBed - Average Rewards")
+        plt.plot(scoreAvg)
+        plt.ylabel('Average Reward')
+        plt.xlabel('Plays')
+    
