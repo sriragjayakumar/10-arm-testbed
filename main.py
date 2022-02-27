@@ -9,6 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 def testbed_plot(distribution):
+    # plt.subplot(2,1,1)
     plt.plot([0,12],[0,0],linestyle='--')
     plt.plot(np.arange(10)+1,distribution,'ro',label='$ \ mean \ (\mu$)')
     plt.errorbar(np.arange(10)+1,distribution,yerr=np.ones(10),fmt='none', label='Standard deviation $\ (\sigma$)')
@@ -17,6 +18,7 @@ def testbed_plot(distribution):
     plt.xlabel('Action')
     plt.ylabel('Reward Distribution')
     plt.legend()
+    plt.show()
 
     
 def std_norm_dist_gen(mean,std,k):
@@ -28,7 +30,7 @@ def std_norm_dist_gen(mean,std,k):
 
 def play(epsilon):
     scoreArr = np.zeros((1000, 1))
-    for _ in range(2000):
+    for _ in range(20):
         
         actArr = std_norm_dist_gen(0,1,10)
         valEstimates = np.zeros(10)
@@ -64,9 +66,11 @@ def play(epsilon):
             
             scoreArr[step]+=reward
                 
-    return scoreArr/2000
+    return scoreArr/20
 
 if __name__ == '__main__':
+        
+        testbed_plot(std_norm_dist_gen(0,1,10))
         
         scoreAvg_0=play(0)
         scoreAvg_01=play(0.1)
@@ -74,9 +78,10 @@ if __name__ == '__main__':
 
         
         plt.title("10-Armed TestBed - Average Rewards")
+        plt.subplot(2,1,2)
         plt.plot(scoreAvg_0,'r')
         plt.plot(scoreAvg_01,'b')
         plt.plot(scoreAvg_001,'g')
         plt.ylabel('Average Reward')
         plt.xlabel('Plays')
-    
+        plt.show()
