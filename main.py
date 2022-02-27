@@ -30,7 +30,7 @@ def std_norm_dist_gen(mean,std,k):
 
 def play(epsilon):
     scoreArr = np.zeros((1000, 1))
-    for _ in range(20):
+    for _ in range(2000):
         
         actArr = std_norm_dist_gen(0,1,10)
         valEstimates = np.zeros(10)
@@ -66,7 +66,7 @@ def play(epsilon):
             
             scoreArr[step]+=reward
                 
-    return scoreArr/20
+    return scoreArr/2000
 
 if __name__ == '__main__':
         
