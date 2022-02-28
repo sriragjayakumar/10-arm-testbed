@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 def testbed_plot(distribution):
-    # plt.subplot(2,1,1)
+    
     plt.plot([0,12],[0,0],linestyle='--')
     plt.plot(np.arange(10)+1,distribution,'ro',label='$ \ mean \ (\mu$)')
     plt.errorbar(np.arange(10)+1,distribution,yerr=np.ones(10),fmt='none', label='Standard deviation $\ (\sigma$)')
@@ -23,65 +23,71 @@ def testbed_plot(distribution):
     
 def std_norm_dist_gen(mean,std,k):
     
-    # np.random.seed(7)
     distribution = np.random.normal(mean,std,k)
     
     return distribution
 
 def play(epsilon):
+    
     scoreArr = np.zeros((1000, 1))
+    optArr=np.zeros((1000,1))
+    
     for _ in range(2000):
         
         actArr = std_norm_dist_gen(0,1,10)
         valEstimates = np.zeros(10)
-        kAction = np.zeros(10)         
+        nAction = np.zeros(10)         
         rSum = np.zeros(10) 
         
         for step in range(1000):
-            
-            
+                        
             randomProb = np.random.uniform(low=0, high=1)
+            
             if randomProb < epsilon:
-                actionT = np.random.choice(10)    
+                actionTaken = np.random.choice(10)    
             else:
                 # Greedy Method
-                maxAction = max(valEstimates)     # Find max value estimate
-                # identify the corresponding action, as array containing only actions with max
-                action = np.where(valEstimates == maxAction)[0]
+                maxAction = max(valEstimates)    
+                possibleActions = np.where(valEstimates == maxAction)[0]
     
-                # If multiple actions contain the same value, randomly select an action
-                if len(action)>1:
+                if len(possibleActions)>1:
 
-                    actionT = np.random.choice(action)
+                    actionTaken = np.random.choice(possibleActions)
                 else:
-                    actionT = action[0]
+                    actionTaken = possibleActions[0]
                     
-            reward = std_norm_dist_gen(actArr[actionT],1,1)[0]
+            reward = std_norm_dist_gen(actArr[actionTaken],1,1)[0]
             
-            kAction[actionT] += 1       # Add 1 to action selection
-            rSum[actionT] += reward    # Add reward to sum array
-    
-            # Calculate new action-value, sum(r)/ka
-            valEstimates[actionT] = rSum[actionT]/kAction[actionT]
-            
+            nAction[actionTaken] += 1       
+            rSum[actionTaken] += reward        
+            valEstimates[actionTaken] = rSum[actionTaken]/nAction[actionTaken]            
             scoreArr[step]+=reward
                 
-    return scoreArr/2000
+            if actionTaken == np.argmax(actArr):
+                optArr[step] += 1
+    
+    return scoreArr/2000,optArr/2000
 
 if __name__ == '__main__':
         
         testbed_plot(std_norm_dist_gen(0,1,10))
         
-        scoreAvg_0=play(0)
-        scoreAvg_01=play(0.1)
-        scoreAvg_001=play(0.01)
-
+        avgReward_0,optAct_0 = play(0)
+        avgReward_01,optAct_01 = play(0.1)
+        avgReward_001,optAct_001 = play(0.01)
         
         plt.title("10-Armed TestBed - Average Rewards")
-        plt.subplot(2,1,2)
-        plt.plot(scoreAvg_0,'r')
-        plt.plot(scoreAvg_01,'b')
-        plt.plot(scoreAvg_001,'g')
+        plt.plot(avgReward_0,'r')
+        plt.plot(avgReward_01,'b')
+        plt.plot(avgReward_001,'g')
         plt.ylabel('Average Reward')
+        plt.xlabel('Plays')
+        plt.show()
+        
+        plt.title("10-Armed TestBed - % Optimal Action")
+        plt.plot(optAct_0*100,'r')
+        plt.plot(optAct_01*100,'b')
+        plt.plot(optAct_001*100,'g')
+        plt.ylabel('% Optimal Action')
         plt.xlabel('Plays')
         plt.show()
