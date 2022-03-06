@@ -32,7 +32,7 @@ def genStdNormDist(mean,std,k):
     """
     return np.random.normal(mean,std,k)
 
-def play(epsilon):
+def play(epsilon, decay=0):
     """
     Performs 10-armed test bed problem with input epsilon value
     """
@@ -46,7 +46,9 @@ def play(epsilon):
         valEstimates = np.zeros(10) #Value states
         nAction = np.zeros(10) #Number of actions taken
         rSum = np.zeros(10) #Reward sum
-        #Loop oveer 1000 steps
+        if _ != 0:
+            epsilon = epsilon-decay
+        #Loop over 1000 steps
         for step in range(1000):
             #Getting random value from unifrom distribution 
             randomProb = np.random.uniform(low=0, high=1)
@@ -97,6 +99,7 @@ if __name__ == '__main__':
     #Ɛ-Greedy method with Ɛ=0.01
     print("Performing Ɛ-Greedy method (Ɛ=0.01)...")
     avgReward_001,optAct_001 = play(0.01)
+    avgReward_0001,optAct_0001 = play(0.1, decay=0.01)
     
     #Plotting average rewards vs plays
     print("Plotting Average rewards...")
@@ -104,9 +107,10 @@ if __name__ == '__main__':
     plt.plot(avgReward_0,'r', label='Ɛ=0')
     plt.plot(avgReward_01,'b', label='Ɛ=0.1')
     plt.plot(avgReward_001,'g', label='Ɛ=0.01')
+    plt.plot(avgReward_0001,'y', label='Ɛ=0.1/Decay')
     plt.ylabel('Average Reward')
     plt.xlabel('Plays')
-    plt.legend(['Ɛ=0', 'Ɛ=0.1', 'Ɛ=0.01'])
+    plt.legend(['Ɛ=0', 'Ɛ=0.1', 'Ɛ=0.01','a'])
     plt.show()
     
     #Plotting Optimal action values vs plays
@@ -115,7 +119,8 @@ if __name__ == '__main__':
     plt.plot(optAct_0*100,'r', label='Ɛ=0')
     plt.plot(optAct_01*100,'b', label='Ɛ=0.1')
     plt.plot(optAct_001*100,'g', label='Ɛ=0.01')
+    plt.plot(optAct_0001*100,'y', label='Ɛ=0.1/Decay')
     plt.ylabel('% Optimal Action')
     plt.xlabel('Plays')
-    plt.legend(['Ɛ=0', 'Ɛ=0.1', 'Ɛ=0.01'])
+    plt.legend(['Ɛ=0', 'Ɛ=0.1', 'Ɛ=0.01','a'])
     plt.show()
