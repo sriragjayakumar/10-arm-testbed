@@ -16,3 +16,5 @@ OR
 - Open the py file in any python IDE, click on run
 OR
 - open command prompt from file location and run "python /tempDifference.py"
+## Notes:-
+- User can change the value of epsilon parameter in Q-Leanring and SARSA methods.
