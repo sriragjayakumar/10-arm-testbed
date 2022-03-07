@@ -28,20 +28,20 @@ def agentWalk(agent, action):
     Move agent with respect to action taken
     """
     # get position of the agent
-    (posX , posY) = agent
+    (x,y) = agent
     # UP
-    if action == 0 and posX > 0:
-        posX = posX - 1
+    if action == 0 and x > 0:
+        x = x - 1
     # LEFT
-    elif action == 1 and posY > 0:
-        posY = posY - 1
+    elif action == 1 and y > 0:
+        y = y - 1
     # RIGHT
-    elif action == 2 and posY < 11:
-        posY = posY + 1
+    elif action == 2 and y < 11:
+        y = y + 1
     # DOWN
-    elif action == 3 and posX < 3:
-        posX = posX + 1
-    agent = (posX, posY)
+    elif action == 3 and x < 3:
+        x = x + 1
+    agent = (x, y)
     return agent
 
 def getReward(state):
@@ -65,7 +65,7 @@ def getReward(state):
 
 def updateQTable(qTable, state, action, reward, followedStateValue, gammaDiscount = 1, alpha = 0.1):
     """
-    Estimates Action value
+    Estimates Action value 
     Q(S, A) <- Q(S, A) + [alpha * (reward + (gamma * maxValue(Q(S', A'))) -  Q(S, A) ]
     """
     qValue = qTable[action, state] + alpha * (reward + (gammaDiscount * followedStateValue) - qTable[action, state])
@@ -109,7 +109,7 @@ def sarsa(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1):
         storedSteps.append(totalSteps)
         if(episode > 498):
             print("Agent trained with SARSA after 500 iterations")
-    return qTable, storedRewards, storedSteps
+    return storedRewards
 
 def qLearning(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1):
     """
@@ -153,44 +153,44 @@ def qLearning(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1):
         if(episode > 498):
             print("Agent trained with Q-learning after 500 iterations") 
         storedSteps.append(stepSum)
-    return qTable, storedRewards, storedSteps
+    return storedRewards
     
 def plotRewardSumNormalised(qLearningRewards, sarsaRewards):
     """
     Plots reward sum from SARSA and Q-Learning after normalsing the values
     """
-    cum_rewards_q = []
-    rewards_mean = np.array(qLearningRewards).mean()
-    rewards_std = np.array(qLearningRewards).std()
+    rewardsQLearning = []
+    meanReward = np.array(qLearningRewards).mean()
+    stdReward = np.array(qLearningRewards).std()
     count = 0 # used to determine the batches
-    cur_reward = 0 # accumulate reward for the batch
+    batchReward = 0 # accumulate reward for the batch
     for cache in qLearningRewards:
         count = count + 1
-        cur_reward += cache
+        batchReward += cache
         if(count == 10):
             # normalize the sample
-            normalized_reward = (cur_reward - rewards_mean)/rewards_std
-            cum_rewards_q.append(normalized_reward)
-            cur_reward = 0
+            normReward = (batchReward - meanReward)/stdReward
+            rewardsQLearning.append(normReward)
+            batchReward = 0
             count = 0
             
-    cum_rewards_SARSA = []
-    rewards_mean = np.array(sarsaRewards).mean()
-    rewards_std = np.array(sarsaRewards).std()
+    rewardsSarsa = []
+    meanReward = np.array(sarsaRewards).mean()
+    stdReward = np.array(sarsaRewards).std()
     count = 0 # used to determine the batches
-    cur_reward = 0 # accumulate reward for the batch
+    batchReward = 0 # accumulate reward for the batch
     for cache in sarsaRewards:
         count = count + 1
-        cur_reward += cache
+        batchReward += cache
         if(count == 10):
             # normalize the sample
-            normalized_reward = (cur_reward - rewards_mean)/rewards_std
-            cum_rewards_SARSA.append(normalized_reward)
-            cur_reward = 0
+            normReward = (batchReward - meanReward)/stdReward
+            rewardsSarsa.append(normReward)
+            batchReward = 0
             count = 0      
     # prepare the graph    
-    plt.plot(cum_rewards_q, label = "q_learning")
-    plt.plot(cum_rewards_SARSA, label = "SARSA")
+    plt.plot(rewardsQLearning, label = "Q-learning")
+    plt.plot(rewardsSarsa, label = "SARSA")
     plt.ylabel('Cumulative Rewards')
     plt.xlabel('Batches of Episodes (sample size 10) ')
     plt.title("Q-Learning/SARSA Convergence of Cumulative Reward")
@@ -198,6 +198,6 @@ def plotRewardSumNormalised(qLearningRewards, sarsaRewards):
     plt.show()
 
 if __name__ == '__main__':
-    qTableSARSA, sarsaRewards, storedSteps_SARSA = sarsa(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1)
-    qTableQLearning, qLearningRewards, storedSteps_qlearning = qLearning(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1)
+    sarsaRewards = sarsa(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1)
+    qLearningRewards = qLearning(episodes = 500, gammaDiscount = 1, alpha = 0.1, epsilon = 0.1)
     plotRewardSumNormalised(qLearningRewards,sarsaRewards)
